@@ -1,17 +1,23 @@
 from django.contrib.auth import login, authenticate
+
+# from django.contrib.auth.models import User
+
+
 from django.db import DatabaseError
-from django.http import HttpRequest, HttpResponse
+
 from django.shortcuts import render, redirect
 import re
 # Create your views here.
 from django.urls import reverse
 from django.views import View
 from django import http
-# from django.http import JsonResponse
+
+
 from meiduo_mall.utils.response_code import RETCODE
-from users.models import User
+
 from django_redis import get_redis_connection
 
+from users.models import User
 
 
 class LoginView(View):
@@ -51,8 +57,7 @@ class LoginView(View):
 
         # 5.如果不符合 没有 user对象
         if user is None:
-            return  render(request, 'login.html', {'account_errmsg':'用户名或密码有误'})
-
+            return render(request, 'login.html', {'account_errmsg': '用户名或密码有误'})
 
         if remembered != 'on':
             # 8.如果没有勾选, 设置session有效期为0 浏览器关闭即失效
@@ -68,12 +73,6 @@ class LoginView(View):
         return redirect(reverse('contents:index'))
 
 
-
-
-
-
-
-
 class MobileCountView(View):
 
     def get(self, request, mobile):
@@ -87,14 +86,9 @@ class MobileCountView(View):
         count = User.objects.filter(mobile=mobile).count()
 
         # 2.拼接参数, 返回
-        return http.JsonResponse({'code':RETCODE.OK,
-                                  'errmsg':'ok',
-                                  'count':count})
-
-
-
-
-
+        return http.JsonResponse({'code': RETCODE.OK,
+                                  'errmsg': 'ok',
+                                  'count': count})
 
 
 class UsernameCountView(View):
@@ -108,11 +102,9 @@ class UsernameCountView(View):
         '''
         count = User.objects.filter(username=username).count()
 
-        return http.JsonResponse({'code':RETCODE.OK,
-                                  'errmsg':'ok',
-                                  'count':count})
-
-
+        return http.JsonResponse({'code': RETCODE.OK,
+                                  'errmsg': 'ok',
+                                  'count': count})
 
 
 class RegisterView(View):
@@ -124,7 +116,6 @@ class RegisterView(View):
         :return:
         '''
         return render(request, 'register.html')
-
 
     def post(self, request):
         '''
@@ -160,52 +151,27 @@ class RegisterView(View):
         if allow != 'on':
             return http.HttpResponseForbidden('请勾选用户同意')
 
-        # 补充: 检验短信验证码的逻辑:
         # 链接redis, 获取链接对象
         redis_conn = get_redis_connection('verify_code')
 
         # 从redis取保存的短信验证码
         sms_code_server = redis_conn.get('send_sms_%s' % mobile)
         if sms_code_server is None:
-            return render(request, 'register.html', {'sms_code_errmsg':'无效的短信验证码'})
+            return render(request, 'register.html', {'sms_code_errmsg': '无效的短信验证码'})
 
         # 对比
         if sms_code_client != sms_code_server.decode():
-            return render(request, 'register.html', {'sms_code_errmsg':'输入的短信验证码有误'})
-
+            return render(request, 'register.html', {'sms_code_errmsg': '输入的短信验证码有误'})
 
         # 3.往mysql保存数据
         try:
             user = User.objects.create_user(username=username, password=password,
-                                     mobile=mobile)
+                                            mobile=mobile)
         except DatabaseError:
-            return render(request, 'register.html', {'register_errmsg':'注册失败'})
-
+            return render(request, 'register.html', {'register_errmsg': '注册失败'})
 
         # 实现状态保持: session:
         login(request, user)
 
-
         # 4.返回结果, 成功则跳转到首页
-        # return HttpResponse('跳转到首页没有完成')
         return redirect(reverse('contents:index'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
