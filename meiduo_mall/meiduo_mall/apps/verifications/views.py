@@ -85,7 +85,7 @@ class SMSCodeView(View):
 
         # 10.返回结果(json)
         return http.JsonResponse({'code': RETCODE.OK,
-                                  'errmsg': 'ok'})
+                                  'errmsg': '发送成功'})
 
         # else:
         #     return http.JsonResponse({'code': RETCODE.OK,

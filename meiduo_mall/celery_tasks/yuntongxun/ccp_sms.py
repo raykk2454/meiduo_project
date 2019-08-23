@@ -9,13 +9,13 @@ ssl._create_default_https_context = ssl._create_unverified_context  # 全局取�
 
 
 # 说明：主账号，登陆云通讯网站后，可在"控制台-应用"中看到开发者主账号ACCOUNT SID
-_accountSid = '8aaf0708686ef7650168709c38240138'
+_accountSid = '8a216da86c8a1a54016caa49a9ee14e9'
 
 # 说明：主账号Token，登陆云通讯网站后，可在控制台-应用中看到开发者主账号AUTH TOKEN
-_accountToken = '0e14294d3ec74c80af42fbc28f19e10d'
+_accountToken = 'c27cf9cb6f504e33994c102aea83b895'
 
 # 请使用管理控制台首页的APPID或自己创建应用的APPID
-_appId = '8aaf0708686ef7650168709c387d013e'
+_appId = '8a216da86c8a1a54016caa49aaca14f0'
 
 # 说明：请求地址，生产环境配置成app.cloopen.com
 _serverIP = 'sandboxapp.cloopen.com'
@@ -78,4 +78,4 @@ class CCP(object):
 
 if __name__ == '__main__':
     # 注意： 测试的短信模板编号为1
-    CCP().send_template_sms('15910261231', ['哈哈哈', 5], 1)
+    CCP().send_template_sms('mobile', ['sms_code', 5], 1)
